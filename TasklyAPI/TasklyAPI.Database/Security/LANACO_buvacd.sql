@@ -1,0 +1,2 @@
+﻿CREATE USER [LANACO\buvacd] FOR LOGIN [LANACO\buvacd];
+
