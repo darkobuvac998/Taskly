@@ -1,3 +1,0 @@
-﻿CREATE LOGIN [LANACO\buvacd]
-    FROM WINDOWS WITH DEFAULT_LANGUAGE = [us_english];
-
