@@ -594,6 +594,6 @@ FodyWeavers.xsd
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
-TasklyAPI.Database\Security
+TasklyAPI\TasklyAPI.Database\Security
 
 # End of https://www.toptal.com/developers/gitignore/api/angular,visualstudiocode,windows,aspnetcore,visualstudio

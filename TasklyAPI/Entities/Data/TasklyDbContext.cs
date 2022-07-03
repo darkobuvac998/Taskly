@@ -11,9 +11,7 @@ namespace Entities.Data
         public virtual DbSet<Models.Task> Tasks { get; set; }
         public virtual DbSet<TaskChecklist> TaskChecklists { get; set; }
 
-        public TasklyDbContext(DbContextOptions<TasklyDbContext> options) : base(options)
-        {
-        }
+        public TasklyDbContext(DbContextOptions<TasklyDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
