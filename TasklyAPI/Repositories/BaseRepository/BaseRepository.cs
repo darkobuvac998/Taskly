@@ -49,16 +49,16 @@ namespace Repositories.BaseRepository
             return trackChanges ? await dbContext.Set<TEntity>().ToListAsync() : await dbContext.Set<TEntity>().AsNoTracking().ToListAsync();
         }
 
-        public TEntity? GetByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges = true)
+        public ICollection<TEntity> GetByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges = true)
         {
-            return trackChanges ? dbContext.Set<TEntity>().Where(expression).FirstOrDefault()
-                : dbContext.Set<TEntity>().Where(expression).AsNoTracking().FirstOrDefault();
+            return trackChanges ? dbContext.Set<TEntity>().Where(expression).ToList()
+                : dbContext.Set<TEntity>().Where(expression).AsNoTracking().ToList();
         }
 
-        public Task<TEntity?> GetByConditionAsync(Expression<Func<TEntity, bool>> expression, bool trackChanges = true)
+        public async Task<ICollection<TEntity>> GetByConditionAsync(Expression<Func<TEntity, bool>> expression, bool trackChanges = true)
         {
-            return trackChanges ? dbContext.Set<TEntity>().Where(expression).FirstOrDefaultAsync()
-                : dbContext.Set<TEntity>().Where(expression).AsNoTracking().FirstOrDefaultAsync();
+            return trackChanges ? await dbContext.Set<TEntity>().Where(expression).ToListAsync()
+                : await dbContext.Set<TEntity>().Where(expression).AsNoTracking().ToListAsync();
         }
 
         public int Save()

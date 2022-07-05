@@ -2,9 +2,9 @@
 
 namespace Entities.DTOs.TaskChecklist
 {
-    public class TaskChecklistDto
+    public class TaskChecklistUpdateDto
     {
-        public int TaskChecklistId { get; set; }
+        public int? TaskChecklistId { get; set; }
         public int TaskId { get; set; }
         [Required]
         [StringLength(50)]

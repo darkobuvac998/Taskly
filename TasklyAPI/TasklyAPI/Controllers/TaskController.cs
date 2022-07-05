@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Entities.DTOs.Task;
+using Entities.DTOs.TaskChecklist;
+using Entities.Models;
 using Entities.QueryParameters;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.RepositoryManager;
@@ -18,35 +20,31 @@ namespace TasklyAPI.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet(Name = "GetTaskById")]
+        /// <summary>
+        /// Get tasks or get task by specified Id.
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns>All tasks for current user.</returns>
+        /// <response code="200">Returns list of tasks</response>
+        /// <response code="404">If specified task by id is not found.</response>
+
+        [HttpGet(Name = "GetTasks")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TaskDto))]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<IActionResult> GetTasks([FromQuery] QueryParameters parameters)
         {
-            if(parameters.TaskId != null)
-            {
-                var task = await _repositoryManager.Task.GetByConditionAsync(task => task.TaskId == parameters.TaskId, trackChanges: false);
-                if (task == null)
-                {
-                    return NoContent();
-                }
-                var taskDto = _mapper.Map<TaskDto>(task);
-                return Ok(taskDto);
-            }
-            else
-            {
-                var tasks = await _repositoryManager.Task.GetAllAsync(trackChanges: false);
-                var tasksDto = _mapper.Map<List<TaskDto>>(tasks);
-                return Ok(tasksDto);
-            }
+
+            var tasks = await _repositoryManager.Task.GetByConditionAsync(parameters.FindExpression<Entities.Models.Task>(), false);
+            var tasksDto = _mapper.Map<List<TaskDto>>(tasks);
+            return Ok(tasksDto);
         }
 
         [HttpPost]
-        [ProducesResponseType(201, Type = typeof(Task))]
+        [ProducesResponseType(201)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> CreateTask([FromBody] TaskDto taskDto)
+        public async Task<IActionResult> CreateTask([FromBody] TaskCreationDto taskDto)
         {
             if (taskDto == null)
             {
@@ -59,14 +57,14 @@ namespace TasklyAPI.Controllers
 
             var task = _mapper.Map<Entities.Models.Task>(taskDto);
             var result = await _repositoryManager.Task.CreateAsync(task);
-            return CreatedAtRoute("GetTaskById", new QueryParameters { TaskId = result.TaskId }, task);
+            return CreatedAtRoute("GetTasks", new QueryParameters { TaskId = result.TaskId }, task);
         }
 
         [HttpPut]
-        [ProducesResponseType(201, Type = typeof(Task))]
+        [ProducesResponseType(204)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> UpdateTask([FromBody] TaskDto taskDto)
+        public async Task<IActionResult> UpdateTask([FromBody] TaskUpdateDto taskDto)
         {
             if (taskDto == null)
             {
@@ -83,7 +81,21 @@ namespace TasklyAPI.Controllers
             }
             else
             {
-                var task = _repositoryManager.Task.GetByCondition(task => task.TaskId == taskDto.TaskId);
+                var task = (await _repositoryManager.Task.GetByConditionAsync(task => task.TaskId == taskDto.TaskId)).FirstOrDefault();
+
+                var checks = taskDto.TaskChecklists.ToList();
+                for (int i = 0; i<taskDto.TaskChecklists.Count; i++)
+                {
+                    var check = checks[i];
+                    if(check.TaskChecklistId == null)
+                    {
+                        var taskCheck = _mapper.Map<TaskChecklist>(check);
+                        await _repositoryManager.TaskChecklist.CreateAsync(taskCheck);
+                        checks[i] = _mapper.Map<TaskChecklistUpdateDto>(taskCheck);
+                    }
+                }
+                taskDto.TaskChecklists = checks;
+
                 _mapper.Map(taskDto, task);
                 await _repositoryManager.SaveAsync();
 
@@ -104,7 +116,7 @@ namespace TasklyAPI.Controllers
             else
             {
                 var task = await _repositoryManager.Task.GetByConditionAsync(task => task.TaskId == parameters.TaskId);
-                if(!await _repositoryManager.Task.DeleteAsync(task))
+                if(!await _repositoryManager.Task.DeleteAsync(task.FirstOrDefault()))
                 {
                     ModelState.AddModelError("", $"Something went wrong!");
                     return StatusCode(StatusCodes.Status500InternalServerError, ModelState);

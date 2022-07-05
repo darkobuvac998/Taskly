@@ -62,7 +62,8 @@ namespace Entities.Data
                     .WithMany(p => p.Tasks)
                     .HasForeignKey(d => d.BoardId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Task_Board");
+                    .HasConstraintName("FK_Task_Board")
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.Priority)
                     .WithMany(p => p.Tasks)
@@ -73,7 +74,7 @@ namespace Entities.Data
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Tasks)
                     .HasForeignKey(d => d.StatusId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_Task_Status");
 
                 entity.Navigation(e => e.TaskChecklists).AutoInclude();
@@ -90,8 +91,10 @@ namespace Entities.Data
                 entity.HasOne(d => d.Task)
                     .WithMany(p => p.TaskChecklists)
                     .HasForeignKey(d => d.TaskId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_TaskChecklist_Task");
+
+                entity.Navigation(tchk => tchk.Task).AutoInclude(false);
             });
 
             OnModelCreatingPartial(modelBuilder);
