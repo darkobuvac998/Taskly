@@ -24,6 +24,8 @@ namespace Entities.Data
                 entity.Property(e => e.Description).IsUnicode(false);
 
                 entity.Property(e => e.Name).IsUnicode(false);
+
+                entity.Navigation(e => e.Tasks).AutoInclude();
             });
 
             modelBuilder.Entity<Priority>(entity =>
@@ -73,6 +75,10 @@ namespace Entities.Data
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Task_Status");
+
+                entity.Navigation(e => e.TaskChecklists).AutoInclude();
+                entity.Navigation(e => e.Status).AutoInclude();
+                entity.Navigation(e => e.Priority).AutoInclude();
             });
 
             modelBuilder.Entity<TaskChecklist>(entity =>

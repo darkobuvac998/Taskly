@@ -39,12 +39,12 @@ namespace Repositories.BaseRepository
             return await SaveAsync() > 0;
         }
 
-        public ICollection<TEntity> GetAll(bool trackChanges = true)
+        public virtual ICollection<TEntity> GetAll(bool trackChanges = true)
         {
             return trackChanges ? dbContext.Set<TEntity>().ToList() : dbContext.Set<TEntity>().AsNoTracking().ToList();
         }
 
-        public async Task<ICollection<TEntity>> GetAllAsync(bool trackChanges = true)
+        public virtual async Task<ICollection<TEntity>> GetAllAsync(bool trackChanges = true)
         {
             return trackChanges ? await dbContext.Set<TEntity>().ToListAsync() : await dbContext.Set<TEntity>().AsNoTracking().ToListAsync();
         }

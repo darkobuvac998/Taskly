@@ -3,6 +3,7 @@
     [Name]        VARCHAR (50)  NOT NULL,
     [Description] VARCHAR (200) NULL,
     [TaskNumber]  INT           NOT NULL,
+    [Visible] BIT NOT NULL DEFAULT 1, 
     CONSTRAINT [PK_Board] PRIMARY KEY CLUSTERED ([BoardId] ASC)
 );
 
