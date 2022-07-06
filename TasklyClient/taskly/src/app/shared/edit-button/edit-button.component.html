@@ -1,0 +1,27 @@
+<div type="button" (click)="onShowActions()" style="cursor: pointer" class="">
+  <div class="edit-btn mb-1"></div>
+  <div class="edit-btn mb-1"></div>
+  <div class="edit-btn"></div>
+  <div
+    *ngIf="inside"
+    class="m-1 position-absolute z-999"
+    style="
+      transform: translateX(-100px);
+      border-radius: 3px;
+      background-color: #d3d3d3;
+    "
+  >
+    <div class="row row-cols-1 d-block m-2" style="color: #1b1212">
+      <div
+        class="col mb-1 mt-1 hover-action d-flex"
+        *ngFor="let btn of actions; let i = index"
+        (click)="onActionClicked(btn.actionName)"
+      >
+        <i [ngClass]="btn.icon" style="margin-right: 1rem"></i>
+        <div>
+          {{ btn.actionName == null ? "Unknown action" : btn.actionName }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

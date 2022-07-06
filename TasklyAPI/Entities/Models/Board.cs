@@ -19,6 +19,7 @@ namespace Entities.Models
         public int TaskNumber { get; set; }
         [Required]
         public bool? Visible { get; set; }
+        public bool? Pinned { get; set; }
 
         [InverseProperty(nameof(Task.Board))]
         public virtual ICollection<Task> Tasks { get; set; }

@@ -1,0 +1,13 @@
+.edit-btn {
+  width: 0.5vh;
+  height: 0.5vh;
+  background: white;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 3px;
+}
+
+.hover-action:hover {
+  background-color: #708090;
+  border-radius: 3px;
+}

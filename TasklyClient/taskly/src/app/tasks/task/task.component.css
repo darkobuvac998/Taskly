@@ -1,0 +1,64 @@
+.task-scrool {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.save-btn {
+  margin-right: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  border: none;
+  background: none;
+  color: white;
+}
+
+input {
+  background-color: inherit;
+  color: white;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+}
+input:read-only {
+  background-color: inherit;
+  border: none;
+  color: white;
+}
+
+select {
+  background-color: inherit;
+  color: white;
+  border: none;
+}
+
+select:disabled {
+  background-color: inherit;
+}
+
+option {
+  color: black;
+}
+
+input.check {
+  border: white;
+}
+
+input.ng-invalid {
+  border-color: #880808;
+  border-width: 3px;
+}
+
+input:read-only.ng-invalid {
+  border-color: #880808;
+  border-width: 3px;
+}
+
+textarea {
+  background-color: inherit;
+}
+
+textarea.ng-invalid {
+  border-color: #880808;
+  border-width: 3px;
+}

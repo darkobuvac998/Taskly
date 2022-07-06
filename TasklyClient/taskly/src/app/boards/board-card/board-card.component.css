@@ -1,0 +1,10 @@
+.rotate-icon {
+  transform: rotate(-45deg);
+}
+
+.board-card {
+  overflow: auto;
+  scroll-behavior: smooth;
+}
+
+

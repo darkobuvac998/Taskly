@@ -14,6 +14,9 @@ namespace Entities.DTOs.Board
         public int TaskNumber { get; set; }
         [Required]
         public bool? Visible { get; set; }
+        public bool? Pinned { get; set; }
+
+
         public virtual ICollection<TaskDto> Tasks { get; set; }
     }
 }

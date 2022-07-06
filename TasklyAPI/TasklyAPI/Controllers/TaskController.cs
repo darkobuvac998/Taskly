@@ -115,8 +115,8 @@ namespace TasklyAPI.Controllers
             }
             else
             {
-                var task = await _repositoryManager.Task.GetByConditionAsync(task => task.TaskId == parameters.TaskId);
-                if(!await _repositoryManager.Task.DeleteAsync(task.FirstOrDefault()))
+                var task = (await _repositoryManager.Task.GetByConditionAsync(task => task.TaskId == parameters.TaskId)).FirstOrDefault();
+                if(!await _repositoryManager.Task.DeleteAsync(task))
                 {
                     ModelState.AddModelError("", $"Something went wrong!");
                     return StatusCode(StatusCodes.Status500InternalServerError, ModelState);

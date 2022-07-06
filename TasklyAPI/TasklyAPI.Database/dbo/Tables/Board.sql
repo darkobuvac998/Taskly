@@ -4,6 +4,7 @@
     [Description] VARCHAR (200) NULL,
     [TaskNumber]  INT           NOT NULL,
     [Visible] BIT NOT NULL DEFAULT 1, 
+    [Pinned] BIT NOT NULL DEFAULT 0, 
     CONSTRAINT [PK_Board] PRIMARY KEY CLUSTERED ([BoardId] ASC)
 );
 

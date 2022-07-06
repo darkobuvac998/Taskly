@@ -1,0 +1,200 @@
+<div
+  class="card position-relative"
+  [ngStyle]="{
+    backgroundColor: this.mode == 1 || this.mode == 0 ? '#6082B6' : '#71797e'
+  }"
+>
+  <form [formGroup]="taskForm" (ngSubmit)="onChangesSubmit()">
+    <div class="row d-flex justify-content-between m-1">
+      <div
+        class="col-md-8 d-flex justify-content-start"
+        style="min-height: 5vh"
+      >
+        <div class="d-inline-block align-self-center">
+          <input
+            [readonly]="mode == 2"
+            placeholder="Task name"
+            type="text"
+            class="form-control"
+            formControlName="name"
+            id="name"
+            value=""
+          />
+        </div>
+        <select
+          class="form-select form-select-sm w-30"
+          id="status"
+          formControlName="statusId"
+          (click)="onEdit()"
+        >
+          <option *ngFor="let item of statusList" [ngValue]="item.statusId">
+            {{ item.name }}
+          </option>
+        </select>
+        <select
+          class="form-select form-select-sm w-30"
+          formControlName="priorityId"
+          (click)="onEdit()"
+        >
+          <option *ngFor="let item of priorityList" [ngValue]="item.priorityId">
+            {{ item.name }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-4 d-flex justify-content-end">
+        <div class="d-inline-block align-self-center">
+          <button
+            [disabled]="!taskForm.valid"
+            type="submit"
+            *ngIf="mode != 2"
+            class="save-btn"
+          >
+            <i
+              class="bi bi-save"
+              [ngStyle]="{ color: taskForm.valid ? 'white' : 'red' }"
+            ></i>
+          </button>
+          <button
+            *ngIf="mode != 2"
+            (click)="onCancel()"
+            type="button"
+            class="save-btn"
+          >
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+        <div class="d-inline-block align-self-center">
+          <app-edit-button
+            (onClick)="onActionButtonClicked($event)"
+            [actions]="editActions"
+          ></app-edit-button>
+        </div>
+      </div>
+    </div>
+    <hr class="m-1" />
+    <div style="max-height: 30vh" class="task-scrool">
+      <div class="row p-0" style="margin-right: 1px">
+        <div class="col-md-7 m-0" style="padding-left: 0.5rem">
+          <div class="row row-cols-1 position-relative m-0">
+            <div class="col m-0">
+              <div class="form">
+                <label for="floatingTextarea">Description</label>
+                <textarea
+                  class="form-control"
+                  placeholder="Leave a description here"
+                  formControlName="description"
+                  id="floatingTextarea"
+                  rows="5"
+                  [readonly]="mode == 2"
+                  style="
+                    background-color: inherit;
+                    color: inherit;
+                    resize: none;
+                  "
+                >
+                </textarea>
+              </div>
+            </div>
+            <div class="col mt-3">
+              <i class="bi bi-clock"> Start Time:</i>
+              <input
+                type="datetime-local"
+                class="form-control"
+                id="startTime"
+                formControlName="startDateTime"
+                [readonly]="mode == 2"
+              />
+            </div>
+            <div class="col mt-3">
+              <i class="bi bi-clock"> Due Time:</i>
+              <input
+                type="datetime-local"
+                class="form-control"
+                id="startTime"
+                formControlName="dueDate"
+                [readonly]="mode == 2"
+              />
+            </div>
+            <div *ngIf="mode == 1 || task?.endDate" class="col mt-3">
+              <i class="bi bi-clock"> End Time:</i>
+              <input
+                type="datetime-local"
+                class="form-control"
+                id="startTime"
+                formControlName="endDate"
+                [readonly]="mode == 2"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5 m-0">
+          <div class="row row-cols-1" formArrayName="taskCheckLists">
+            <div class="col m-0 p-0">
+              Checklist
+              <i
+                (click)="addCheckItem()"
+                class="bi bi-plus-circle"
+                style="cursor: pointer"
+              ></i>
+            </div>
+            <div
+              class="col p-0"
+              *ngFor="let control of controls; let i = index"
+              [formGroupName]="i"
+            >
+              <div class="input-group mb-1 p-0">
+                <div class="input-group-text">
+                  <input
+                    class="mt-0"
+                    type="checkbox"
+                    value=""
+                    aria-label="Checkbox for following text input"
+                    formControlName="checked"
+                    style="border: 1px solid #71797e"
+                  />
+                </div>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="name"
+                  aria-label="Text input with checkbox"
+                />
+                <i
+                  (click)="removeCheck(i)"
+                  class="bi bi-dash-circle position-sticky p-2"
+                ></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="row row-cols-1 m-0 p-0">
+        <div class="col">
+          <label for="link" class="form-label">Attachment Link:</label>
+
+          <input
+            type="text"
+            formControlName="attachmentLink"
+            class="form-control"
+            id="link"
+            style="background-color: inherit; color: inherit"
+            [readonly]="mode == 2"
+          />
+        </div>
+        <div class="col mb-1">
+          <label for="note" class="form-label">Note:</label>
+          <textarea
+            class="form-control"
+            placeholder="Leave a note here"
+            formControlName="note"
+            id="note"
+            rows="2"
+            [readonly]="mode == 2"
+            style="background-color: inherit; color: inherit; resize: none"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -13,5 +13,7 @@ namespace Entities.DTOs.Board
         public string Description { get; set; }
         [Required]
         public bool? Visible { get; set; }
+        public bool? Pinned { get; set; }
+
     }
 }
