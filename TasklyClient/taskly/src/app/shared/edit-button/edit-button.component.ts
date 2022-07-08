@@ -25,12 +25,6 @@ export class EditButtonComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onShowActions() {
-    if (this.inside) {
-      this.showActions = !this.showActions;
-    }
-  }
-
   onActionClicked(actionName: string) {
     this.onClick.emit(actionName);
   }
@@ -38,9 +32,9 @@ export class EditButtonComponent implements OnInit {
   @HostListener('document:click', ['$event'])
   onClickOutside(event: any) {
     if (this.elementRef.nativeElement.contains(event.target)) {
-      this.inside = true;
+      this.showActions = !this.showActions;
     } else {
-      this.inside = false;
+      this.showActions = false;
     }
   }
 }

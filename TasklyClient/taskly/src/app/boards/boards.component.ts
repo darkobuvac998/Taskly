@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Actions, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { take } from 'rxjs/operators';
+import { AppState } from '../store/app.reducer';
 import { BoardCard } from './board-card/board-card.model';
 
+import * as BoardsActions from './store/board.actions';
 @Component({
   selector: 'app-boards',
   templateUrl: './boards.component.html',
@@ -9,11 +14,12 @@ import { BoardCard } from './board-card/board-card.model';
 export class BoardsComponent implements OnInit {
   public boards: Array<BoardCard> = [];
 
-  constructor() {}
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
-    this.boards.push(new BoardCard());
-    this.boards.push(new BoardCard());
-    this.boards.push(new BoardCard());
+    this.store.dispatch(new BoardsActions.FetchBoards());
+    this.store.select('boards').subscribe((state) => {
+      this.boards = state.boards;
+    });
   }
 }

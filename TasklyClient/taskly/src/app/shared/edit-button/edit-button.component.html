@@ -1,9 +1,9 @@
-<div type="button" (click)="onShowActions()" style="cursor: pointer" class="">
+<div type="button" style="cursor: pointer" class="">
   <div class="edit-btn mb-1"></div>
   <div class="edit-btn mb-1"></div>
   <div class="edit-btn"></div>
   <div
-    *ngIf="inside"
+    *ngIf="showActions"
     class="m-1 position-absolute z-999"
     style="
       transform: translateX(-100px);

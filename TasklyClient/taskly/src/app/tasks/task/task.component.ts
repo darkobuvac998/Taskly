@@ -1,52 +1,39 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
+import { Status } from 'src/app/shared/codebook/status.model';
 import { ButtonAction } from 'src/app/shared/edit-button/button-action';
-import { Priority } from '../priority.model';
-import { Status } from '../status.model';
+import { AppState } from 'src/app/store/app.reducer';
+import { Priority } from '../../shared/codebook/priority.model';
 import { Task } from './task.model';
+
+import * as fromBoardsActions from '../../boards/store/board.actions';
 
 @Component({
   selector: 'app-task',
   templateUrl: './task.component.html',
   styleUrls: ['./task.component.css'],
 })
-export class TaskComponent implements OnInit {
+export class TaskComponent implements OnInit, OnDestroy {
   public mode: FormMode = FormMode.View;
   public taskForm: FormGroup;
-  public task: Task;
+  @Input() public task: Task;
   public editActions: Array<ButtonAction> = [];
   public statusList: Array<Status> = [];
   public priorityList: Array<Priority> = [];
-  constructor() {}
+  public storeSubscription: Subscription;
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
+    console.log(this.task);
     this.initTaskForm();
-
-    this.priorityList.push(
-      {
-        priorityId: 1,
-        name: 'Low',
-        color: '#FFEA00',
-      },
-      {
-        priorityId: 2,
-        name: 'Medium',
-        color: '#FF3131',
-      }
-    );
-
-    this.statusList.push(
-      {
-        statusId: 1,
-        name: 'Finished',
-        color: '#32CD32',
-      },
-      {
-        statusId: 1,
-        name: 'In Progress',
-        color: '#89CFF0',
-      }
-    );
+    this.storeSubscription = this.store
+      .select('codebooks')
+      .subscribe((state) => {
+        this.statusList = state.statuses;
+        this.priorityList = state.priorities;
+      });
 
     this.editActions.push(
       {
@@ -60,6 +47,10 @@ export class TaskComponent implements OnInit {
     );
   }
 
+  ngOnDestroy(): void {
+    this.storeSubscription?.unsubscribe();
+  }
+
   onEdit() {
     this.mode = FormMode.Edit;
   }
@@ -69,15 +60,20 @@ export class TaskComponent implements OnInit {
   }
 
   onChangesSubmit() {
-    console.log(this.taskForm);
+    console.log(this.task);
+    console.log(this.taskForm.value);
+    let updatedTask = this.taskForm.value as Task;
+    updatedTask.boardId = this.task.boardId;
+    updatedTask.taskId = this.task.taskId;
+    this.store.dispatch(new fromBoardsActions.UpdateTask(updatedTask));
   }
 
   get controls() {
-    return (<FormArray>this.taskForm.get('taskCheckLists')).controls;
+    return (<FormArray>this.taskForm.get('taskChecklists')).controls;
   }
 
   addCheckItem() {
-    (<FormArray>this.taskForm.get('taskCheckLists')).push(
+    (<FormArray>this.taskForm.get('taskChecklists')).push(
       new FormGroup({
         name: new FormControl('', Validators.required),
         checked: new FormControl(false),
@@ -87,7 +83,7 @@ export class TaskComponent implements OnInit {
   }
 
   removeCheck(index: number) {
-    (<FormArray>this.taskForm.get('taskCheckLists')).removeAt(index);
+    (<FormArray>this.taskForm.get('taskChecklists')).removeAt(index);
     if (this.mode == FormMode.View) {
       this.mode = FormMode.Edit;
     }
@@ -104,40 +100,65 @@ export class TaskComponent implements OnInit {
   }
 
   onCancel() {
-    let ctl = this.controls;
-    ctl = ctl.filter((item) => item.valid);
-    let newCtl = new FormArray([...ctl]);
-    this.taskForm.setControl('taskCheckLists', newCtl);
+    this.initTaskForm();
     this.mode = FormMode.View;
   }
 
-  private initTaskForm() {
-    let taskCheckLists = new FormArray([]);
-    taskCheckLists.push(
-      new FormGroup({
-        name: new FormControl('Check 1', Validators.required),
-        checked: new FormControl(true),
+  get priority(): Priority | undefined {
+    let p = this.priorityList.find(
+      (item) => item.priorityId == this.taskForm.get('priorityId')?.value
+    );
+    return p;
+  }
+
+  get status(): Status | undefined {
+    return this.statusList.find(
+      (item) => item.statusId == this.taskForm.get('statusId')?.value
+    );
+  }
+
+  onCheckChange(index: number, event: any) {
+    console.log(event.target.checked);
+    let check = this.task.taskChecklists[index];
+    this.store.dispatch(
+      new fromBoardsActions.CheckUpdate({
+        boardId: this.task.boardId,
+        checked: event.target.checked,
+        taskChecklistId: check.taskChecklistId,
+        taskId: this.task.taskId,
       })
     );
+  }
+
+  private initTaskForm() {
+    let taskChecklists = new FormArray([]);
+
+    this.task?.taskChecklists?.forEach((item) => {
+      taskChecklists.push(
+        new FormGroup({
+          name: new FormControl(item.name, Validators.required),
+          checked: new FormControl(item.checked),
+          taskChecklistId: new FormControl(item.taskChecklistId),
+          taskId: new FormControl(item.taskId),
+        })
+      );
+    });
 
     this.taskForm = new FormGroup({
-      statusId: new FormControl(1, Validators.required),
-      priorityId: new FormControl(1, Validators.required),
-      name: new FormControl('Test task', Validators.required),
-      description: new FormControl(
-        `Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.`,
-        Validators.required
-      ),
-      startDateTime: new FormControl(),
-      dueDate: new FormControl(),
-      endDate: new FormControl(),
+      statusId: new FormControl(this.task.statusId, Validators.required),
+      priorityId: new FormControl(this.task.priorityId, Validators.required),
+      name: new FormControl(this.task.name, Validators.required),
+      description: new FormControl(this.task.description, Validators.required),
+      startDateTime: new FormControl(this.task.startDateTime),
+      dueDate: new FormControl(this.task.dueDate),
+      endDate: new FormControl(this.task.endDate),
       attachmentLink: new FormControl(
-        'https://drive.google.com',
+        this.task.attachmentLink,
         Validators.maxLength(2048)
       ),
-      note: new FormControl('Test note', Validators.maxLength(100)),
-      timeAmount: new FormControl(''),
-      taskCheckLists: taskCheckLists,
+      note: new FormControl(this.task.note, Validators.maxLength(100)),
+      timeAmount: new FormControl(this.task.timeAmount),
+      taskChecklists: taskChecklists,
     });
   }
 }

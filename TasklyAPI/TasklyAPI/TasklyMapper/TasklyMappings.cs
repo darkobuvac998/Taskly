@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Entities.DTOs.Board;
+using Entities.DTOs.Priority;
+using Entities.DTOs.Status;
 using Entities.DTOs.Task;
 using Entities.DTOs.TaskChecklist;
 using Entities.Models;
@@ -24,6 +26,12 @@ namespace TasklyAPI.TasklyMapper
             CreateMap<TaskChecklist, TaskChecklistDto>().ReverseMap();
             CreateMap<TaskChecklistCreationDto, TaskChecklist>();
             CreateMap<TaskChecklistUpdateDto, TaskChecklist>().ReverseMap();
+
+            //Status
+            CreateMap<Status, StatusDto>();
+
+            //Priority
+            CreateMap<Priority, PriorityDto>();
 
         }
     }

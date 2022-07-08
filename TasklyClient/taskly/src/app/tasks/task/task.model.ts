@@ -1,3 +1,5 @@
+import { TaskCheck } from "../task-checklist/task-checklist.model";
+
 export class Task {
   public taskId: number;
   public statusId: number;
@@ -11,5 +13,5 @@ export class Task {
   public note: string;
   public attachmentLink: string;
   public timeAmount: number;
-  public taskCheckLists: any;
+  public taskChecklists: TaskCheck[];
 }

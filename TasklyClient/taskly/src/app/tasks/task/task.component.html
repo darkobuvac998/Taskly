@@ -22,6 +22,7 @@
           />
         </div>
         <select
+        [ngStyle]="{ color: status?.color }"
           class="form-select form-select-sm w-30"
           id="status"
           formControlName="statusId"
@@ -32,12 +33,13 @@
           </option>
         </select>
         <select
+          [ngStyle]="{ color: priority?.color }"
           class="form-select form-select-sm w-30"
           formControlName="priorityId"
           (click)="onEdit()"
         >
           <option *ngFor="let item of priorityList" [ngValue]="item.priorityId">
-            {{ item.name }}
+            <span>{{ item.name }}</span>
           </option>
         </select>
       </div>
@@ -128,7 +130,7 @@
           </div>
         </div>
         <div class="col-md-5 m-0">
-          <div class="row row-cols-1" formArrayName="taskCheckLists">
+          <div class="row row-cols-1" formArrayName="taskChecklists">
             <div class="col m-0 p-0">
               Checklist
               <i
@@ -143,21 +145,26 @@
               [formGroupName]="i"
             >
               <div class="input-group mb-1 p-0">
-                <div class="input-group-text">
+                <div
+                  class="input-group-text"
+                  style="border: none; background-color: inherit"
+                >
                   <input
-                    class="mt-0"
+                    class="mt-0 form-check"
                     type="checkbox"
                     value=""
                     aria-label="Checkbox for following text input"
                     formControlName="checked"
-                    style="border: 1px solid #71797e"
+                    style="border: 1px solid #71797e; width: 1.2rem"
+                    (change)="onCheckChange(i, $event)"
                   />
                 </div>
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-control p-0"
                   formControlName="name"
                   aria-label="Text input with checkbox"
+                  (click)="onEdit()"
                 />
                 <i
                   (click)="removeCheck(i)"

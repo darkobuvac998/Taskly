@@ -1,8 +1,16 @@
-<div style="background-color: #36454f; position: relative; max-height: 80vh; opacity: 0.85;" class="card ">
+<div
+  style="
+    background-color: #36454f;
+    position: relative;
+    max-height: 80vh;
+    opacity: 0.85;
+  "
+  class="card"
+>
   <div class="row d-flex justify-content-evenly m-1">
     <div class="col-md-10 w-80 d-flex">
       <div class="d-inline-block align-self-center">
-        <div>{{ "Test Board" | uppercase }}</div>
+        <div>{{ board?.name | uppercase }}</div>
       </div>
     </div>
     <div class="col-md-1 w-20 d-flex justify-content-end">
@@ -15,20 +23,19 @@
         <i class="bi bi-pin-angle" style="cursor: pointer"></i>
       </div>
       <div class="d-inline-block align-self-center">
-        <app-edit-button></app-edit-button>
+        <app-edit-button [actions]="actions"></app-edit-button>
       </div>
     </div>
   </div>
   <hr class="m-1" />
-  <div class="row row-cols-1 m-0 board-card">
+  <div *ngIf="board?.tasks?.length == 0" class="row row-cols-1 m-0 board-card">
     <div class="col mt-2">
-      <app-task></app-task>
+      <p class="fs-4">There is no tasks.</p>
     </div>
-    <div class="col mt-2">
-      <app-task></app-task>
-    </div>
-    <div class="col mt-2">
-      <app-task></app-task>
+  </div>
+  <div *ngIf="board?.tasks?.length" class="row row-cols-1 m-0 board-card">
+    <div class="col mt-2" *ngFor="let task of board?.tasks">
+      <app-task [task]="task"></app-task>
     </div>
   </div>
 </div>
